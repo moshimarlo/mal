@@ -1,4 +1,4 @@
-STEPS = step0_repl
+STEPS = step0_repl step1_read_print
 
 all: $(STEPS)
 
@@ -7,5 +7,8 @@ all: $(STEPS)
 	cp target/release/$* $@
 
 STEP0_DEPS = Cargo.toml
+STEP1_DEPS = $(STEP0_DEPS) reader.rs
 
 step0_repl: $(STEP0_DEPS)
+
+step1_repl:
