@@ -1,43 +1,80 @@
-use std::io;
-use std::io::Write;
-
 mod reader;
 mod types;
+mod printer;
 
-fn read(line: String) -> String {
-    reader::read_str(&line);
+use std::io::Write;
+
+use types::{
+    MalType,
+};
+
+fn read(line: String) -> MalType {
+    reader::read_str(&line)
+}
+
+fn eval(line: MalType) -> MalType {
     line
 }
 
-fn eval(line: String) -> String {
-    line
+fn print(line: MalType) -> String {
+    printer::pr_str(line)
 }
 
-fn print(line: String) -> String {
-    line
-}
-
-fn rep(mut line: String) -> String {
-    line = read(line);
-    line = eval(line);
-    line = print(line);
-    line
+fn rep(line: String) -> String {
+    let mut mtype = read(line);
+    mtype = eval(mtype);
+    print(mtype)
 }
 
 fn print_prompt() {
     print!("user> ");
-    io::stdout().flush().unwrap();
+    std::io::stdout().flush().unwrap();
 }
 
 fn main() {
     print_prompt();
     let mut line = String::new();
-    while io::stdin().read_line(&mut line)
+    while std::io::stdin().read_line(&mut line)
         .expect("Error reading line") > 0 {
         line = rep(line);
         println!("{}", line);
         print_prompt();
         }
     print!("\n");
-    io::stdout().flush().unwrap();
+    std::io::stdout().flush().unwrap();
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_rep() {
+        let line = rep("123".to_string());
+        assert_eq!(line, "123");
+    }
+
+    #[test]
+    fn test_num_spaces() {
+        let line = rep("123 ".to_string());
+        assert_eq!(line, "123");
+    }
+
+    #[test]
+    fn test_sym() {
+        let line = rep("abc".to_string());
+        assert_eq!(line, "abc");
+    }
+
+    #[test]
+    fn test_sym_spaces() {
+        let line = rep("abc ".to_string());
+        assert_eq!(line, "abc");
+    }
+
+    #[test]
+    fn test_list() {
+        let line = rep("(123 456)".to_string());
+        assert_eq!(line, "(123 456)");
+    }
 }
