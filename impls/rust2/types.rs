@@ -1,6 +1,7 @@
 pub trait MType {
     // Only to be used for MalLists
     fn push(&mut self, thing: MalType);
+    fn len(&self) -> usize;
 }
 
 #[derive(Debug)]
@@ -14,7 +15,14 @@ impl MType for MalType {
     fn push(&mut self, thing: MalType) {
         match self {
             MalType::List(s) => { s.push(thing); },
-            _ => { panic!("Push used on something other than MalList!"); },
+            _ => { panic!("push used on something other than MalList!"); },
+        }
+    }
+
+    fn len(&self) -> usize {
+        match self {
+            MalType::List(s) => { s.len() },
+            _ => { panic!("len used on something other than MalList!"); },
         }
     }
 }  
@@ -82,13 +90,21 @@ impl MalList {
     pub fn push(&mut self, m: MalType) {
         self.val.push(m);
     }
+
+    pub fn len(&self) -> usize {
+        self.val.len()
+    }
 }
 
 impl std::fmt::Display for MalList{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // if self.val.len() == 0 {
+        //     write!(f, "( )")?;
+        //     return Ok(());
+        // }
         write!(f, "(")?;
         for v in &self.val {
-            write!(f, "{} ", v)?;
+            write!(f, "{}", &v)?;
         }
         write!(f, ")")?;
         Ok(())

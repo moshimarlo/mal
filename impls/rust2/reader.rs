@@ -20,81 +20,94 @@ impl Reader {
         }
     }
 
-    fn next(&mut self) -> String {
-        let ret: String;
-        match self.get_token() {
-            Ok(v) => ret = v.to_string(),
-            Err(e) => panic!("Panic: {}", e),
-        }
+    fn next(&mut self) -> &str {
+        let s = match self.tokens.get(self.pos) {
+            Some(s) => {
+                s
+            },
+            None => "EOF",
+        };
         self.pos += 1;
-        ret
+        s
     }
 
     fn peek(&self) -> &str {
-        match self.get_token() {
-            Ok(v) => &v,
-            Err(e) => panic!("Panic: {}", e),
-        }
-    }
-
-    fn get_token(&self) -> Result<&str, &str>{
         match self.tokens.get(self.pos) {
-            Some(val) => Ok(val),
-            None => Err("pos out of bounds"),
+            Some(v) => &v,
+            None => "EOF",
         }
     }
 }
 
-pub fn read_str(s: &str) -> MalType {
+pub fn read_str(s: &str) -> Option<MalType> {
     let mut reader = Reader::new(tokenize(s));
+    println!("Tokens: {:?}", reader.tokens);
     read_form(&mut reader)
 }
 
 fn tokenize(s: &str) -> Vec<String> {
-    let mut ret = Vec::<String>::new();
+    let mut v = Vec::<String>::new();
     for token in Regex::new(
         r###"[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)"###
         ).unwrap().find_iter(s) {
-            ret.push(token.as_str().to_string()); 
+            v.push(
+                token
+                .as_str()
+                .chars()
+                .filter(|c| !c.is_whitespace())
+                .collect()
+            );
     }
-    ret
+    v
 }
 
-fn read_form(reader: &mut Reader) -> MalType {
+fn read_form(reader: &mut Reader) -> Option<MalType> {
     let mut chars = reader.peek().chars();
     match chars.next() {
         Some('(') => {
             let val = read_list(reader);
-            val
+            Some(val)
         },
         _ => {
-            read_atom(&reader)
+            if let Some(val) = read_atom(&reader) {
+                Some(val)
+            } else {
+                None
+            }
         }
     }
 }
 
 fn read_list(reader: &mut Reader) -> MalType {
     let mut ret = MalType::List(MalList::new());
-    let mut s: String;
+    let mut s: &str;
     loop {
         s = reader.next();
         match s.as_ref() {
             ")" => { break; },
             _ => {
-                //ret.push::<MalList>(read_atom(&reader))
-                //MalType(<MalList>::push(&ret, read_atom(&reader)));
-                //MalType::List(MalList::push(&ret, read_atom(&reader)));
-                Some(ret.push(read_form(reader)));
+                match read_form(reader) {
+                    Some(val) => { ret.push(val); },
+                    None => { continue; },
+                }
             },
         }
     }
     ret
 }
 
-fn read_atom(reader: &Reader) -> MalType {
+fn read_atom(reader: &Reader) -> Option<MalType> {
     let tok = reader.peek();
     match tok.parse() {
-        Ok(val) => MalType::Number(MalNumber::new(val)),
-        Err(_) => MalType::Symbol(MalSymbol::new(&tok[..])),
+        Ok(num) => Some(MalType::Number(MalNumber::new(num))),
+        Err(_) => { 
+            match tok {
+                ")" => None,
+                " " => None,
+                _ => {
+                    Some(MalType::Symbol(MalSymbol::new(&tok[..])))
+                },
+            }
+        },
     }
 }

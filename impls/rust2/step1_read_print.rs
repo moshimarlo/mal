@@ -9,7 +9,11 @@ use types::{
 };
 
 fn read(line: String) -> MalType {
-    reader::read_str(&line)
+    if let Some(val) = reader::read_str(&line) {
+        val
+    } else {
+        panic!("Error reading string");
+    }
 }
 
 fn eval(line: MalType) -> MalType {
@@ -39,6 +43,7 @@ fn main() {
         line = rep(line);
         println!("{}", line);
         print_prompt();
+        line = String::new();
         }
     print!("\n");
     std::io::stdout().flush().unwrap();

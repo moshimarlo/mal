@@ -7,8 +7,8 @@ all: $(STEPS)
 	cp target/release/$* $@
 
 STEP0_DEPS = Cargo.toml
-STEP1_DEPS = $(STEP0_DEPS) reader.rs
+STEP1_DEPS = $(STEP0_DEPS) reader.rs printer.rs types.rs
 
 step0_repl: $(STEP0_DEPS)
 
-step1_repl:
+step1_read_print: $(STEP1_DEPS)

@@ -9,9 +9,9 @@ edition = "2021"
 regex = "1.5.4"
 
 [[bin]]
-name = "step0_repl"
+name = "step0"
 path = "step0_repl.rs"
 
 [[bin]]
-name = "step1_read_print"
+name = "step1"
 path = "step1_read_print.rs"
