@@ -103,7 +103,6 @@ fn read_atom(reader: &Reader) -> Option<MalType> {
         Err(_) => { 
             match tok {
                 ")" => None,
-                " " => None,
                 _ => {
                     Some(MalType::Symbol(MalSymbol::new(&tok[..])))
                 },
