@@ -98,13 +98,13 @@ impl MalList {
 
 impl std::fmt::Display for MalList{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // if self.val.len() == 0 {
-        //     write!(f, "( )")?;
-        //     return Ok(());
-        // }
+        let max = self.val.len();
         write!(f, "(")?;
-        for v in &self.val {
-            write!(f, "{}", &v)?;
+        if max > 0 {
+            for i in 0..max-1 {
+                write!(f, "{} ", &self.val[i])?;
+            }
+            write!(f, "{}", &self.val[max-1])?;
         }
         write!(f, ")")?;
         Ok(())

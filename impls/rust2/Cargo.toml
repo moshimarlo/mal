@@ -13,5 +13,5 @@ name = "step0"
 path = "step0_repl.rs"
 
 [[bin]]
-name = "step1"
+name = "step1_read_print"
 path = "step1_read_print.rs"

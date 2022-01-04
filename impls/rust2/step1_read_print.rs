@@ -79,7 +79,11 @@ mod test {
 
     #[test]
     fn test_list() {
-        let line = rep("(123 456)".to_string());
-        assert_eq!(line, "(123 456)");
+        let line1 = rep("(123 456)".to_string());
+        let line2 = rep("( 123 456 789 )".to_string());
+        let line3 = rep("( + 2 (* 3 4) )".to_string());
+        assert_eq!(line1, "(123 456)");
+        assert_eq!(line2, "(123 456 789)");
+        assert_eq!(line3, "(+ 2 (* 3 4))");
     }
 }

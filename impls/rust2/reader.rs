@@ -41,7 +41,7 @@ impl Reader {
 
 pub fn read_str(s: &str) -> Option<MalType> {
     let mut reader = Reader::new(tokenize(s));
-    println!("Tokens: {:?}", reader.tokens);
+    println!("{:?}", reader.tokens);
     read_form(&mut reader)
 }
 
