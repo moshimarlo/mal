@@ -54,7 +54,8 @@ fn tokenize(s: &str) -> Vec<String> {
                 token
                 .as_str()
                 .chars()
-                .filter(|c| !c.is_whitespace())
+                // TODO: get rid of this filter and use the regex to get rid of whitespace
+                .filter(|c| !c.is_whitespace() && *c != ',')
                 .collect()
             );
     }
@@ -85,6 +86,7 @@ fn read_list(reader: &mut Reader) -> MalType {
         s = reader.next();
         match s.as_ref() {
             ")" => { break; },
+            "" => { break; },
             _ => {
                 match read_form(reader) {
                     Some(val) => { ret.push(val); },
